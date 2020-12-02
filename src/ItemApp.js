@@ -74,7 +74,7 @@ const ItemApp =()=>{
             el.id == values.column ? { ...el, items: [...el.items, {name:newEntry, id:nanoid()}] } : el
             ))
         ]
-        ))
+        )), setNewEntry("")
     )
   }
 
@@ -122,7 +122,7 @@ const ItemApp =()=>{
                 }}
                 >
                 <option aria-label="None" value="Choose Column" >Choose Column</option>
-                {console.log(columnData),columnData.map(column=>{
+                {columnData.map(column=>{
                     return <option value={column.id} key={column.id}>{column.name}</option>
                 })}
                 </NativeSelect>
