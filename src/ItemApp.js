@@ -42,7 +42,6 @@ const colData = [
   : colData
 
 const ItemApp =()=>{
-
     const [columnData, setColumnData] =useState(ALL_COLUMNS)
     const [searchTerm, setSearchTerm] = useState("")
     const [snackbarValue, setSnackbarValue] = useState({open:false})
