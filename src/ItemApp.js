@@ -55,18 +55,23 @@ const ItemApp =()=>{
         message:`Columns reset to initial state.`
     }))}
 
+    function resetInputs(){
+
+    }
+
   const addItem = (e)=>{
     e.preventDefault();
     const itemName = e.target[0].value
     const columnName = selectedColumnValue?.column
     const bothInvalid = (!itemName && !columnName) ? true : false
+    // if itemName or selectedColumn is blank 
       return (!columnName || !itemName) ? (
         setSnackbarValue({
             open:true,
             severity:"error",
             message:`Please provide a valid ${!columnName ? "column":""}${bothInvalid ? " and " : "" }${!itemName ? "item": ""} and submit again.`
         })
-      ) : ( 
+      ) : (
         setColumnData(prevState => (
         [...prevState.map(el => (
             el.id === columnName ? { ...el, items: [...el.items, {name:itemName, id:nanoid()}] } : el
@@ -76,7 +81,9 @@ const ItemApp =()=>{
             open:true,
             severity:"success",
             message:"item added"    
-        })
+        }),
+        e.target[0].value = "",
+        document.getElementById("column-native-select-helper").value=""
     )
   }
 
@@ -115,6 +122,7 @@ const ItemApp =()=>{
                 <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
                 <NativeSelect
                 variant="outlined"
+                defaultValue=""
                 value={selectedColumnValue?.column}
                 onChange={handleSelectChange}
                 inputProps={{
@@ -133,6 +141,7 @@ const ItemApp =()=>{
     )}
 
     return(
+        <>
         <div className="item-app">
             <h2 className="item-app-gradient">Add an item</h2>
             <div className="item-app-grid" style={{gridTemplateColumns:`1fr ${columnData.length}fr`}}>
@@ -146,8 +155,9 @@ const ItemApp =()=>{
                 <ColumnGrid />
             </div>
             <Button aria-label="resetItemsToOriginalValues" variant="outlined" onClick={handleResetColumns} style={{marginTop:10, width:"100%"}}>Reset Items</Button> 
-            <Toast data={{snackbarValue,setSnackbarValue}}/>
         </div>
+        <Toast data={{snackbarValue,setSnackbarValue}}/>
+        </>
     )
 }
 

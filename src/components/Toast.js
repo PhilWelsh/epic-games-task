@@ -10,7 +10,7 @@ const Toast=({data:{snackbarValue,setSnackbarValue}})=> {
     };
 
     return (
-        <Snackbar open={snackbarValue.open} autoHideDuration={3000} onClose={handleClose} inputProps={{ "aria-label": snackbarValue.severity}}>
+        <Snackbar open={snackbarValue.open} autoHideDuration={1500} onClose={handleClose} inputProps={{ "aria-label": snackbarValue.severity}}>
             <Alert onClose={handleClose} severity={snackbarValue.severity}>
                 {snackbarValue.message}
             </Alert>
