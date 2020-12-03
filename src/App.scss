@@ -10,6 +10,7 @@ body {
   margin: auto;
 }
 
+//variables
 $primary: #8efded;
 $grey: #79818f;
 $greylight: #bcc0c7;
@@ -25,10 +26,14 @@ body {
 .App-header {
   margin-bottom: 50px;
 }
+
+// theme styles
 .theme {
   max-width: 600px;
   width: calc(100% - 20px);
   margin: auto;
+
+  // remove and alter MUI elements
   .MuiIconButton-root {
     padding: 0;
   }
@@ -60,6 +65,7 @@ body {
   .MuiNativeSelect-select:not([multiple]) optgroup {
     background-color: $grey;
   }
+
   label {
     font-weight: bold;
   }
