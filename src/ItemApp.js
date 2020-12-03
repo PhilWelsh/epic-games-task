@@ -68,7 +68,8 @@ const ItemApp =()=>{
             severity:"success",
             message:"item added"    
         }),
-        setSelectedColumnValue("0"),
+        //RESET SELECTION AND INPUT VALUES (DISABLED COLUMN RESET FOR UX REASONS)
+        // setSelectedColumnValue("0"),
         e.target[0].value = ""
     )
   }
