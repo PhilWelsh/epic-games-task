@@ -4,48 +4,18 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/lab/Alert';
 import CancelIcon from '@material-ui/icons/Cancel';
 import SearchIcon from '@material-ui/icons/Search';
-
-const colData = [
-    {
-        name:"column 1",
-        id:"101",
-        items:[
-            {name:"item1", id:"qqxyg4"},
-            {name:"item2", id:"iwm8zh"},
-            {name:"item3", id:"7d5gan"},
-        ]
-    },
-    {
-        name:"column 2",
-        id:"102",
-        items:[
-            {name:"item1", id:"qgifJq"},
-            {name:"item2", id:"rxt8ca"},
-            {name:"item3", id:"mtb7pq"},
-        ]
-    },    
-    // {
-    //     name:"column3",
-    //     id:"103",
-    //     items:[
-    //         {name:"item1", id:"7naef7"},
-    //     ]
-    // }
-]
-
-    const ALL_COLUMNS = localStorage.getItem('columnData')
-  ? JSON.parse(localStorage.getItem('columnData'))
-  : colData
+import colData, {ALL_COLUMNS} from "./components/colData"
+import Toast from "./components/Toast"
 
 const ItemApp =()=>{
     const [columnData, setColumnData] =useState(ALL_COLUMNS)
     const [searchTerm, setSearchTerm] = useState("")
     const [snackbarValue, setSnackbarValue] = useState({open:false})
     const [selectedColumnValue, setSelectedColumnValue] = useState();
+    
+    // maintain localStorage
     useEffect(() => {
         localStorage.setItem('columnData', JSON.stringify(columnData))
       }, [columnData])
@@ -58,7 +28,6 @@ const ItemApp =()=>{
         });
       };
     
-
     const handleItemDelete = (e)=>{
         const currentTargetId = e.currentTarget.name 
         setColumnData(columnData.map(column => ({
@@ -77,6 +46,14 @@ const ItemApp =()=>{
     const handleSearchChange = (e) =>{
         setSearchTerm(e.target.value)
     }
+
+    const handleResetColumns = ()=>{return(
+        setColumnData(colData),
+        setSnackbarValue({
+        open:true,
+        severity:"success",
+        message:`Columns reset to initial state.`
+    }))}
 
   const addItem = (e)=>{
     e.preventDefault();
@@ -103,87 +80,74 @@ const ItemApp =()=>{
     )
   }
 
-    const SimpleSnackbar=()=> {
-        const handleClose = (reason) => {
-            if (reason === 'clickaway') {
-                return;
-            }
-            setSnackbarValue(({values})=>({...values, open:false}));
-        };
+  const ColumnGrid = ()=>{
+    const Columns = ()=>columnData.map((column) => {
+        const Items = ()=> column.items.map(({...item}) => {
+            return item.name.includes(searchTerm) &&
+            (
+            <div key={item.id} className="item-app-column-item">
+                <span>{item.name}</span>
+                <IconButton aria-label="delete"  onClick={handleItemDelete} name={item.id} >
+                    <CancelIcon/>
+                </IconButton>
+            </div>)
+        })
+            return(
+                <div className="item-app-column-container" key={column.name}>
+                    <h3 className="item-app-gradient-dark" key={column.name}>{column.name}</h3>
+                    <Items/>
+                </div>
+            )
+        }
+    )
+    
+    return(
+        <div className="item-app-columns">
+            <Columns/>
+        </div>
+    )
+}
 
-        return (
-                <Snackbar open={snackbarValue.open} autoHideDuration={3000} onClose={handleClose} inputProps={{ "aria-label": snackbarValue.severity}}>
-                    <Alert onClose={handleClose} severity={snackbarValue.severity}>
-                        {snackbarValue.message}
-                    </Alert>
-                </Snackbar>
-        );
-    }
-        
-
-    const ColumnGrid = ()=>{
-        const Columns = ()=>columnData.map((column) => {
-            const Items = ()=> column.items.map(({...item}) => {
-                return item.name.includes(searchTerm) &&
-                (
-                <div key={item.id} className="item-app-column-item">
-                    <span>{item.name}</span>
-                    <IconButton aria-label="delete"  onClick={handleItemDelete} name={item.id} >
-                        <CancelIcon/>
-                    </IconButton>
-                </div>)
-            })
-                return(
-                    <div className="item-app-column-container" key={column.name}>
-                        <h3 className="item-app-gradient-dark" key={column.name}>{column.name}</h3>
-                        <Items/>
-                    </div>
-                )
-            }
-        )
-        
+    const AddItemForm =()=>{
         return(
-            <div className="item-app-columns">
-                <Columns/>
+        <form aria-label="addItemForm" onSubmit={addItem}>
+            <div className="item-app-form-entry">
+                <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
+                <NativeSelect
+                variant="outlined"
+                value={selectedColumnValue?.column}
+                onChange={handleSelectChange}
+                inputProps={{
+                    name: 'column',
+                    id: 'column-native-select-helper',
+                }}
+                >
+                <option value="" >Choose Column</option>
+                {columnData.map(column=>{
+                    return <option value={column.id} key={column.id}>{column.name}</option>
+                })}
+                </NativeSelect>
             </div>
-        )
-    }
+            <Button type="submit" variant="outlined">Add Item</Button> 
+        </form>
+    )}
 
     return(
-    <div className="item-app">
-        <h2 className="item-app-gradient">Add an item</h2>
-        <div className="item-app-grid" style={{gridTemplateColumns:`1fr ${columnData.length}fr`}}>
-            <div className="item-app-column-forms">
-            <form aria-label="addItemForm" onSubmit={addItem}>
-                <div className="item-app-form-entry">
-                    <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
-                    <NativeSelect
-                    variant="outlined"
-                    value={selectedColumnValue?.column}
-                    onChange={handleSelectChange}
-                    inputProps={{
-                        name: 'column',
-                        id: 'column-native-select-helper',
-                    }}
-                    >
-                    <option value="" >Choose Column</option>
-                    {columnData.map(column=>{
-                        return <option value={column.id} key={column.id}>{column.name}</option>
-                    })}
-                    </NativeSelect>
+        <div className="item-app">
+            <h2 className="item-app-gradient">Add an item</h2>
+            <div className="item-app-grid" style={{gridTemplateColumns:`1fr ${columnData.length}fr`}}>
+                <div className="item-app-column-forms">
+                    <AddItemForm/>
+                    <TextField id="standard-search" label="Search an Item" type="search" placeholder="search..." onChange={handleSearchChange} variant="outlined"
+                    InputProps={{
+                        startAdornment:(<SearchIcon />)
+                    }}/>
                 </div>
-                <Button type="submit" variant="outlined">Add Item</Button> 
-            </form>
-            <TextField id="standard-search" label="Search an Item" type="search" placeholder="search..." onChange={handleSearchChange} variant="outlined"
-            InputProps={{
-                startAdornment:(<SearchIcon />)
-            }}/>
+                <ColumnGrid />
             </div>
-            <ColumnGrid colData={columnData} />
+            <Button aria-label="resetItemsToOriginalValues" variant="outlined" onClick={handleResetColumns} style={{marginTop:10, width:"100%"}}>Reset Items</Button> 
+            <Toast data={{snackbarValue,setSnackbarValue}}/>
         </div>
-        <Button aria-label="resetItemsToOriginalValues" variant="outlined" onClick={()=>setColumnData(colData)} style={{marginTop:10, width:"100%"}}>Reset Items</Button> 
-        <SimpleSnackbar/>
-    </div>
     )
 }
 
