@@ -1,6 +1,11 @@
 import {useState} from 'react'
 import { nanoid } from 'nanoid'
-import { Button,TextField,NativeSelect,IconButton } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import IconButton from '@material-ui/core/IconButton';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 import CancelIcon from '@material-ui/icons/Cancel';
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -8,41 +13,43 @@ import SearchIcon from '@material-ui/icons/Search';
 const colData = [
     {
         name:"column1",
-        id:101,
+        id:"101",
         items:[
-            {name:"item1", id:1},
-            {name:"item2", id:2},
-            {name:"item3", id:3},
+            {name:"item1", id:"1"},
+            {name:"item2", id:"2"},
+            {name:"item3", id:"3"},
         ]
     },
     {
         name:"column2",
-        id:102,
+        id:"102",
         items:[
-            {name:"item1", id:4},
-            {name:"item2", id:5},
-            {name:"item3", id:6},
+            {name:"item1", id:"4"},
+            {name:"item2", id:"5"},
+            {name:"item3", id:"6"},
         ]
     },    
     // {
     //     name:"column3",
-    //     id:103,
+    //     id:"103",
     //     items:[
-    //         {name:"item1", id:7},
+    //         {name:"item1", id:"7"},
     //     ]
     // }
 ]
 
+
+
 const ItemApp =()=>{
     const [columnData, setColumnData] =useState(colData)
     const [searchTerm, setSearchTerm] = useState("")
-
+    const [snackbarValue, setSnackbarValue] = useState({open:false})
     const [selectedColumnValue, setSelectedColumnValue] = useState();
-    const handleSelectChange = (event) => {
-        const name = event.target.name;
+    const handleSelectChange = (e) => {
+        const name = e.target.name;
         setSelectedColumnValue({
           ...selectedColumnValue,
-          [name]: event.target.value,
+          [name]: e.target.value,
         });
       };
     
@@ -52,29 +59,62 @@ const ItemApp =()=>{
         setColumnData(columnData.map(column => ({
             ...column,
             items: column.items
-            .filter(item => item.id !== (Number(currentTargetId)))
-        })))
+            .filter(item => item.id !== (currentTargetId))
+        })));
+        console.log(currentTargetId);
+        setSnackbarValue({
+            open:true,
+            severity:"success",
+            message:"item deleted"
+        })
     }
 
-    const handleSearchChange = (event) =>{
-        setSearchTerm(event.target.value)
+    const handleSearchChange = (e) =>{
+        setSearchTerm(e.target.value)
     }
 
-  const addItem = (event)=>{
-    event.preventDefault();
-    const newEntry = event.target[0].value
-    // const columnValue = selectedColumnValue?.column
-      return (!selectedColumnValue?.column || !event.target[0].value) ? (
-          console.log("error message function")
+  const addItem = (e)=>{
+    e.preventDefault();
+    const itemName = e.target[0].value
+    const columnName = selectedColumnValue?.column
+    const bothInvalid = (!itemName && !columnName) ? true : false
+      return (!columnName || !itemName) ? (
+        setSnackbarValue({
+            open:true,
+            severity:"error",
+            message:`Please provide a valid ${!columnName ? "column":""}${bothInvalid ? " and " : "" }${!itemName ? "item": ""} and submit again.`
+        })
       ) : ( 
         setColumnData(prevState => (
         [...prevState.map(el => (
-            el.id === (Number(selectedColumnValue.column)) ? { ...el, items: [...el.items, {name:newEntry, id:nanoid()}] } : el
+            el.id === columnName ? { ...el, items: [...el.items, {name:itemName, id:nanoid()}] } : el
             ))
         ]
-        ))
+        )),setSnackbarValue({
+            open:true,
+            severity:"success",
+            message:"item added"    
+        })
     )
   }
+
+    function SimpleSnackbar() {
+        const handleClose = (reason) => {
+            if (reason === 'clickaway') {
+                return;
+            }
+            setSnackbarValue(({values})=>({...values, open:false}));
+        };
+
+        return (
+                <Snackbar open={snackbarValue.open} autoHideDuration={3000} onClose={handleClose}>
+                    <Alert onClose={handleClose} severity={snackbarValue.severity}>
+                        {snackbarValue.message}
+                    </Alert>
+                </Snackbar>
+        );
+    }
+        
 
     const ColumnGrid = ()=>{
         const Columns = ()=>columnData.map((column) => {
@@ -112,7 +152,6 @@ const ItemApp =()=>{
             <form onSubmit={addItem}>
                 <div className="item-app-form-entry">
                     <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
-                    {console.log(selectedColumnValue)}
                     <NativeSelect
                     variant="outlined"
                     value={selectedColumnValue?.column}
@@ -137,6 +176,7 @@ const ItemApp =()=>{
             </div>
             <ColumnGrid colData={columnData} />
         </div>
+        <SimpleSnackbar/>
     </div>
     )
 }
