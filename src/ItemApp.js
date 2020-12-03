@@ -19,23 +19,13 @@ const ItemApp =()=>{
     useEffect(() => {
         localStorage.setItem('columnData', JSON.stringify(columnData))
       }, [columnData])
-      
-    const handleSelectChange = (e) => {
-        const name = e.target.name;
-        setSelectedColumnValue({
-          ...selectedColumnValue,
-          [name]: e.target.value,
-        });
-      };
     
     const handleItemDelete = (e)=>{
-        const currentTargetId = e.currentTarget.name 
         setColumnData(columnData.map(column => ({
             ...column,
             items: column.items
-            .filter(item => item.id !== (currentTargetId))
+            .filter(item => item.id !== (e.currentTarget.name))
         })));
-        console.log(currentTargetId);
         setSnackbarValue({
             open:true,
             severity:"success",
@@ -47,7 +37,8 @@ const ItemApp =()=>{
         setSearchTerm(e.target.value)
     }
 
-    const handleResetColumns = ()=>{return(
+    const handleResetColumns = ()=>{
+        return(
         setColumnData(colData),
         setSnackbarValue({
         open:true,
@@ -55,26 +46,21 @@ const ItemApp =()=>{
         message:`Columns reset to initial state.`
     }))}
 
-    function resetInputs(){
-
-    }
-
   const addItem = (e)=>{
     e.preventDefault();
     const itemName = e.target[0].value
-    const columnName = selectedColumnValue?.column
-    const bothInvalid = (!itemName && !columnName) ? true : false
+    const bothInvalid = (!itemName && selectedColumnValue === 0) ? true : false
     // if itemName or selectedColumn is blank 
-      return (!columnName || !itemName) ? (
+      return (selectedColumnValue === 0 || !itemName) ? (
         setSnackbarValue({
             open:true,
             severity:"error",
-            message:`Please provide a valid ${!columnName ? "column":""}${bothInvalid ? " and " : "" }${!itemName ? "item": ""} and submit again.`
+            message:`Please provide a valid ${selectedColumnValue === 0 ? "column":""}${bothInvalid ? " and " : "" }${!itemName ? "item": ""} and submit again.`
         })
       ) : (
         setColumnData(prevState => (
         [...prevState.map(el => (
-            el.id === columnName ? { ...el, items: [...el.items, {name:itemName, id:nanoid()}] } : el
+            el.id === selectedColumnValue ? { ...el, items: [...el.items, {name:itemName, id:nanoid()}] } : el
             ))
         ]
         )),setSnackbarValue({
@@ -82,8 +68,8 @@ const ItemApp =()=>{
             severity:"success",
             message:"item added"    
         }),
-        e.target[0].value = "",
-        document.getElementById("column-native-select-helper").value=""
+        setSelectedColumnValue(0),
+        e.target[0].value = ""
     )
   }
 
@@ -115,38 +101,33 @@ const ItemApp =()=>{
     )
 }
 
-    const AddItemForm =()=>{
-        return(
-        <form aria-label="addItemForm" onSubmit={addItem}>
-            <div className="item-app-form-entry">
-                <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
-                <NativeSelect
-                variant="outlined"
-                defaultValue=""
-                value={selectedColumnValue?.column}
-                onChange={handleSelectChange}
-                inputProps={{
-                    name: 'column',
-                    id: 'column-native-select-helper',
-                }}
-                >
-                <option value="" >Choose Column</option>
-                {columnData.map(column=>{
-                    return <option value={column.id} key={column.id}>{column.name}</option>
-                })}
-                </NativeSelect>
-            </div>
-            <Button type="submit" variant="outlined">Add Item</Button> 
-        </form>
-    )}
-
     return(
         <>
         <div className="item-app">
             <h2 className="item-app-gradient">Add an item</h2>
             <div className="item-app-grid" style={{gridTemplateColumns:`1fr ${columnData.length}fr`}}>
                 <div className="item-app-column-forms">
-                    <AddItemForm/>
+                    <form aria-label="addItemForm" onSubmit={addItem}>
+                        <div className="item-app-form-entry">
+                            <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
+                            <NativeSelect
+                            variant="outlined"
+                            defaultValue={0}
+                            value={selectedColumnValue}
+                            onChange={(e)=>setSelectedColumnValue(e.target.value)}
+                            inputProps={{
+                                name: 'column',
+                                id: 'column-native-select-helper',
+                            }}
+                            >
+                            <option value={0} >Choose Column</option>
+                            {columnData.map(column=>{
+                                return <option value={column.id} key={column.id}>{column.name}</option>
+                            })}
+                            </NativeSelect>
+                        </div>
+                        <Button type="submit" variant="outlined">Add Item</Button> 
+                    </form>
                     <TextField id="standard-search" label="Search an Item" type="search" placeholder="search..." onChange={handleSearchChange} variant="outlined"
                     InputProps={{
                         startAdornment:(<SearchIcon />)

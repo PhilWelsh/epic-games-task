@@ -17,4 +17,5 @@ const Toast=({data:{snackbarValue,setSnackbarValue}})=> {
         </Snackbar>
     );
 }
+
 export default Toast
