@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import { nanoid } from 'nanoid'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -9,42 +9,48 @@ import Alert from '@material-ui/lab/Alert';
 import CancelIcon from '@material-ui/icons/Cancel';
 import SearchIcon from '@material-ui/icons/Search';
 
-
 const colData = [
     {
         name:"column1",
         id:"101",
         items:[
-            {name:"item1", id:"1"},
-            {name:"item2", id:"2"},
-            {name:"item3", id:"3"},
+            {name:"item1", id:"qqxyg4"},
+            {name:"item2", id:"iwm8zh"},
+            {name:"item3", id:"7d5gan"},
         ]
     },
     {
         name:"column2",
         id:"102",
         items:[
-            {name:"item1", id:"4"},
-            {name:"item2", id:"5"},
-            {name:"item3", id:"6"},
+            {name:"item1", id:"qgifJq"},
+            {name:"item2", id:"rxt8ca"},
+            {name:"item3", id:"mtb7pq"},
         ]
     },    
     // {
     //     name:"column3",
     //     id:"103",
     //     items:[
-    //         {name:"item1", id:"7"},
+    //         {name:"item1", id:"7naef7"},
     //     ]
     // }
 ]
 
-
+    const ALL_COLUMNS = localStorage.getItem('columnData')
+  ? JSON.parse(localStorage.getItem('columnData'))
+  : colData
 
 const ItemApp =()=>{
-    const [columnData, setColumnData] =useState(colData)
+
+    const [columnData, setColumnData] =useState(ALL_COLUMNS)
     const [searchTerm, setSearchTerm] = useState("")
     const [snackbarValue, setSnackbarValue] = useState({open:false})
     const [selectedColumnValue, setSelectedColumnValue] = useState();
+    useEffect(() => {
+        localStorage.setItem('columnData', JSON.stringify(columnData))
+      }, [columnData])
+      
     const handleSelectChange = (e) => {
         const name = e.target.name;
         setSelectedColumnValue({
@@ -98,7 +104,7 @@ const ItemApp =()=>{
     )
   }
 
-    function SimpleSnackbar() {
+    const SimpleSnackbar=()=> {
         const handleClose = (reason) => {
             if (reason === 'clickaway') {
                 return;
@@ -176,6 +182,7 @@ const ItemApp =()=>{
             </div>
             <ColumnGrid colData={columnData} />
         </div>
+        <Button variant="outlined" onClick={()=>setColumnData(colData)} style={{marginTop:10, width:"100%"}}>Reset Items</Button> 
         <SimpleSnackbar/>
     </div>
     )
