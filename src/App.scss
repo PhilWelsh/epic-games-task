@@ -1,7 +1,17 @@
+//variables
+$primary: #8efded;
+$background: #282c34;
+$grey: #79818f;
+$greylight: #bcc0c7;
+$greylighter: #9ba1ab;
+$white: #f2f3f4;
+$spacing: 8px;
+
 body {
-  background-color: #282c34;
-  color: white;
+  background-color: $background;
+  color: $white;
 }
+
 #root {
   display: flex;
   height: 100vh;
@@ -9,15 +19,6 @@ body {
 .App {
   margin: auto;
 }
-
-//variables
-$primary: #8efded;
-$grey: #79818f;
-$greylight: #bcc0c7;
-$greylighter: #9ba1ab;
-$white: #f2f3f4;
-$spacing: 8px;
-
 body {
   background: $grey;
   color: $white;
@@ -155,7 +156,7 @@ body {
       }
     }
     button:hover > span svg {
-      color: red;
+      color: #f74a4a;
     }
     h3 {
       padding: $spacing;
