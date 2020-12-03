@@ -49,13 +49,13 @@ const ItemApp =()=>{
   const addItem = (e)=>{
     e.preventDefault();
     const itemName = e.target[0].value
-    const bothInvalid = (!itemName && selectedColumnValue === "0") ? true : false
+    const bothInvalid = (!itemName && !selectedColumnValue) ? true : false
     // if itemName or selectedColumn is blank 
-      return (selectedColumnValue === "0" || !itemName) ? (
+      return (!selectedColumnValue || !itemName) ? (
         setSnackbarValue({
             open:true,
             severity:"error",
-            message:`Please provide a valid ${selectedColumnValue === "0" ? "column":""}${bothInvalid ? " and " : "" }${!itemName ? "item": ""} and submit again.`
+            message:`Please provide a valid ${!selectedColumnValue ? "column":""}${bothInvalid ? " and " : "" }${!itemName ? "item": ""} and submit again.`
         })
       ) : (
         setColumnData(prevState => (
@@ -113,7 +113,6 @@ const ItemApp =()=>{
                             <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
                             <NativeSelect
                             variant="outlined"
-                            defaultValue="0"
                             value={selectedColumnValue}
                             onChange={(e)=>setSelectedColumnValue(e.target.value)}
                             inputProps={{
@@ -121,7 +120,7 @@ const ItemApp =()=>{
                                 id: 'column-native-select-helper',
                             }}
                             >
-                            <option value={0} >Choose Column</option>
+                            <option value="">Choose Column</option>
                             {columnData.map(column=>{
                                 return <option value={column.id} key={column.id}>{column.name}</option>
                             })}
