@@ -15,11 +15,15 @@ $grey: #79818f;
 $greylight: #bcc0c7;
 $greylighter: #9ba1ab;
 $white: #f2f3f4;
-$spacing: 9px;
+$spacing: 8px;
 
 body {
   background: $grey;
   color: $white;
+}
+
+.App-header {
+  margin-bottom: 50px;
 }
 .theme {
   max-width: 600px;
@@ -71,6 +75,10 @@ body {
     font-family: "Merriweather";
     font-size: 2.5rem;
     font-weight: 100;
+    margin-bottom: 0;
+  }
+  h2 {
+    padding: 10px;
   }
   h2,
   h3 {
@@ -147,5 +155,11 @@ body {
       padding: $spacing;
       margin: 0;
     }
+  }
+  .item-app-gradient {
+    background: linear-gradient(#bec7d2, #8d9bad, #79818f);
+  }
+  .item-app-gradient-dark {
+    background: linear-gradient(#b6c5d8, #5d687a);
   }
 }

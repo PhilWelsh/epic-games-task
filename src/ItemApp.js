@@ -11,7 +11,7 @@ import SearchIcon from '@material-ui/icons/Search';
 
 const colData = [
     {
-        name:"column1",
+        name:"column 1",
         id:"101",
         items:[
             {name:"item1", id:"qqxyg4"},
@@ -20,7 +20,7 @@ const colData = [
         ]
     },
     {
-        name:"column2",
+        name:"column 2",
         id:"102",
         items:[
             {name:"item1", id:"qgifJq"},
@@ -112,7 +112,7 @@ const ItemApp =()=>{
         };
 
         return (
-                <Snackbar open={snackbarValue.open} autoHideDuration={3000} onClose={handleClose}>
+                <Snackbar open={snackbarValue.open} autoHideDuration={3000} onClose={handleClose} inputProps={{ "aria-label": snackbarValue.severity}}>
                     <Alert onClose={handleClose} severity={snackbarValue.severity}>
                         {snackbarValue.message}
                     </Alert>
@@ -135,7 +135,7 @@ const ItemApp =()=>{
             })
                 return(
                     <div className="item-app-column-container" key={column.name}>
-                        <h3 key={column.name}>{column.name}</h3>
+                        <h3 className="item-app-gradient-dark" key={column.name}>{column.name}</h3>
                         <Items/>
                     </div>
                 )
@@ -151,10 +151,10 @@ const ItemApp =()=>{
 
     return(
     <div className="item-app">
-        <h2>Add an item</h2>
+        <h2 className="item-app-gradient">Add an item</h2>
         <div className="item-app-grid" style={{gridTemplateColumns:`1fr ${columnData.length}fr`}}>
             <div className="item-app-column-forms">
-            <form onSubmit={addItem}>
+            <form aria-label="addItemForm" onSubmit={addItem}>
                 <div className="item-app-form-entry">
                     <TextField variant="outlined" id="new-entry-input" label="Enter Item"/>
                     <NativeSelect
@@ -163,10 +163,10 @@ const ItemApp =()=>{
                     onChange={handleSelectChange}
                     inputProps={{
                         name: 'column',
-                        id: 'column-native-helper',
+                        id: 'column-native-select-helper',
                     }}
                     >
-                    <option aria-label="None" value="" >Choose Column</option>
+                    <option value="" >Choose Column</option>
                     {columnData.map(column=>{
                         return <option value={column.id} key={column.id}>{column.name}</option>
                     })}
@@ -181,7 +181,7 @@ const ItemApp =()=>{
             </div>
             <ColumnGrid colData={columnData} />
         </div>
-        <Button variant="outlined" onClick={()=>setColumnData(colData)} style={{marginTop:10, width:"100%"}}>Reset Items</Button> 
+        <Button aria-label="resetItemsToOriginalValues" variant="outlined" onClick={()=>setColumnData(colData)} style={{marginTop:10, width:"100%"}}>Reset Items</Button> 
         <SimpleSnackbar/>
     </div>
     )
